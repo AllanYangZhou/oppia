@@ -974,25 +974,13 @@ oppia.directive('textAngularRte', [
           displayedContent);
       });
 
-      $scope.$on('removed-element', function(event, args) {
-	$timeout(function() {
+      $scope.$on('removed-element', function() {
+        $timeout(function() {
           _convertHtmlToRte($scope.htmlContent, function(html) {
-              $scope.tempContent = html;
+            $scope.tempContent = html;
           });
-	}, 0.05);
+        });
       });
-
-      /*
-      // It is possible for the content of the RTE to be changed externally,
-      // e.g. if there are several RTEs in a list, and one is deleted.
-      $scope.$watch('htmlContent', function(newVal, oldVal) {
-        if (newVal !== oldVal) {
-          _convertHtmlToRte(newVal, function(html) {
-              $scope.tempContent = html;
-          });
-        }
-      });
-      */
     }]
   };
 }]);
@@ -1712,7 +1700,7 @@ oppia.directive('schemaBasedListEditor', [
 
           $scope.deleteElement = function(index) {
             $scope.localValue.splice(index, 1);
-	    $scope.$broadcast('removed-element');
+            $scope.$broadcast('removed-element');
           };
         } else {
           if ($scope.len <= 0) {
