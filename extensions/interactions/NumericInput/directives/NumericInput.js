@@ -33,11 +33,13 @@ oppia.directive('oppiaInteractiveNumericInput', [
         'numeric_input_interaction_directive.html'),
       controller: [
         '$scope', '$attrs', 'FocusManagerService', 'numericInputRulesService',
-        'WindowDimensionsService', 'EVENT_PROGRESS_NAV_SUBMITTED',
+        'WindowDimensionsService', 'CurrentAnswerService',
         function(
             $scope, $attrs, FocusManagerService, numericInputRulesService,
-            WindowDimensionsService, EVENT_PROGRESS_NAV_SUBMITTED) {
-          $scope.answer = '';
+            WindowDimensionsService, CurrentAnswerService) {
+          $scope.currentAnswerData = CurrentAnswerService.init(
+            numericInputRulesService);
+          $scope.currentAnswerData.answer = '';
           $scope.labelForFocusTarget = $attrs.labelForFocusTarget || null;
 
           $scope.NUMERIC_INPUT_FORM_SCHEMA = {
@@ -54,23 +56,12 @@ oppia.directive('oppiaInteractiveNumericInput', [
             }
           };
 
-          $scope.$on(EVENT_PROGRESS_NAV_SUBMITTED, function() {
-            $scope.submitAnswer($scope.answer);
-          });
-
+          // TODO(allan): Move this to proper place.
           $scope.isAnswerValid = function() {
             return (
               $scope.answer !== undefined &&
               $scope.answer !== null && $scope.answer !== '');
           };
-
-          $scope.$watch(function() {
-            return $scope.answer;
-          }, function() {
-            $scope.setAnswerValidity({
-              answerValidity: $scope.isAnswerValid()
-            });
-          });
         }
       ]
     };

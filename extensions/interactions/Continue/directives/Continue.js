@@ -32,34 +32,36 @@ oppia.directive('oppiaInteractiveContinue', [
         'continue_interaction_directive.html'),
       controller: [
         '$scope', '$attrs', 'WindowDimensionsService',
-        'EVENT_PROGRESS_NAV_SUBMITTED',
+        'CurrentAnswerService',
         function(
             $scope, $attrs, WindowDimensionsService,
-            EVENT_PROGRESS_NAV_SUBMITTED) {
+            CurrentAnswerService) {
+          $scope.currentAnswerData = CurrentAnswerService.init(
+            continueRulesService);
           $scope.buttonText = HtmlEscaperService.escapedJsonToObj(
             $attrs.buttonTextWithValue);
 
           var DEFAULT_BUTTON_TEXT = 'Continue';
           var DEFAULT_HUMAN_READABLE_ANSWER = 'Please continue.';
 
-          $scope.submitAnswer = function() {
-            // We used to show "(Continue)" to indicate a 'continue' action when
-            // the learner browses through the history of the exploration, but
-            // this apparently can be mistaken for a button/control. The
-            // following makes the learner's "answer" a bit more conversational,
-            // as if they were chatting with Oppia.
-            var humanReadableAnswer = DEFAULT_HUMAN_READABLE_ANSWER;
-            if ($scope.buttonText !== DEFAULT_BUTTON_TEXT) {
-              humanReadableAnswer = $scope.buttonText;
-            }
+          // We used to show "(Continue)" to indicate a 'continue' action when
+          // the learner browses through the history of the exploration, but
+          // this apparently can be mistaken for a button/control. The
+          // following makes the learner's "answer" a bit more conversational,
+          // as if they were chatting with Oppia.
+          var humanReadableAnswer = DEFAULT_HUMAN_READABLE_ANSWER;
+          if ($scope.buttonText !== DEFAULT_BUTTON_TEXT) {
+            humanReadableAnswer = $scope.buttonText;
+          }
 
+          $scope.currentAnswerData.answer = humanReadableAnswer;
+
+          $scope.submitAnswer = function() {
             $scope.onSubmit({
               answer: humanReadableAnswer,
               rulesService: continueRulesService
             });
           };
-
-          $scope.$on(EVENT_PROGRESS_NAV_SUBMITTED, $scope.submitAnswer);
         }
       ]
     };

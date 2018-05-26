@@ -41,10 +41,18 @@ oppia.directive('oppiaInteractiveGraphInput', [
         'graph_input_interaction_directive.html'),
       controller: [
         '$scope', '$element', '$attrs', 'WindowDimensionsService',
-        'ExplorationPlayerService', 'EVENT_PROGRESS_NAV_SUBMITTED',
+        'ExplorationPlayerService', 'CurrentAnswerService',
         function(
             $scope, $element, $attrs, WindowDimensionsService,
-            ExplorationPlayerService, EVENT_PROGRESS_NAV_SUBMITTED) {
+            ExplorationPlayerService, CurrentAnswerService) {
+          $scope.currentAnswerData = CurrentAnswerService.init(
+            graphInputRulesService);
+          $scope.$watch(function() {
+            return $scope.graph;
+          }, function() {
+            // Copy is needed strip $$hashkey.
+            $scope.currentAnswerData.answer = angular.copy($scope.graph);
+          }, true);
           $scope.errorMessage = '';
           $scope.graph = {
             vertices: [],
@@ -60,7 +68,6 @@ oppia.directive('oppiaInteractiveGraphInput', [
               rulesService: graphInputRulesService
             });
           };
-          $scope.$on(EVENT_PROGRESS_NAV_SUBMITTED, $scope.submitGraph);
           $scope.interactionIsActive = ($scope.getLastAnswer() === null);
           $scope.$on(EVENT_NEW_CARD_AVAILABLE, function() {
             $scope.interactionIsActive = false;
@@ -113,14 +120,6 @@ oppia.directive('oppiaInteractiveGraphInput', [
           var checkValidGraph = function(graph) {
             return Boolean(graph);
           };
-
-          $scope.$watch(function() {
-            return $scope.graph;
-          }, function() {
-            $scope.setAnswerValidity({
-              answerValidity: checkValidGraph($scope.graph)
-            });
-          });
 
           init();
         }

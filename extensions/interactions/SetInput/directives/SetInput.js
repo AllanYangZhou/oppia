@@ -34,10 +34,10 @@ oppia.directive('oppiaInteractiveSetInput', [
         'set_input_interaction_directive.html'),
       controller: [
         '$scope', '$attrs', '$translate', 'setInputRulesService',
-        'WindowDimensionsService', 'EVENT_PROGRESS_NAV_SUBMITTED',
+        'WindowDimensionsService', 'CurrentAnswerService',
         function(
             $scope, $attrs, $translate, setInputRulesService,
-            WindowDimensionsService, EVENT_PROGRESS_NAV_SUBMITTED) {
+            WindowDimensionsService, CurrentAnswerService) {
           $scope.schema = {
             type: 'list',
             items: {
@@ -50,8 +50,11 @@ oppia.directive('oppiaInteractiveSetInput', [
             }
           };
 
+          $scope.currentAnswerData = CurrentAnswerService.init(
+            setInputRulesService);
+
           // Adds an input field by default
-          $scope.answer = [''];
+          $scope.currentAnswerData.answer = [''];
 
           var hasDuplicates = function(answer) {
             for (var i = 0; i < answer.length; i++) {
@@ -88,19 +91,15 @@ oppia.directive('oppiaInteractiveSetInput', [
               !hasBlankOption($scope.answer));
           };
 
-          $scope.$on(EVENT_PROGRESS_NAV_SUBMITTED, function() {
-            $scope.submitAnswer($scope.answer);
-          });
-
           // Third parameter is set to true to enable deep watching.
           // https://stackoverflow.com/questions/14712089/
+          /* TODO: remove
           $scope.$watch(function() {
             return $scope.answer;
           }, function() {
-            $scope.setAnswerValidity({
-              answerValidity: $scope.isAnswerValid()
-            });
+            CurrentAnswerService.setCurrentAnswer($scope.answer);
           }, true);
+          */
         }
       ]
     };

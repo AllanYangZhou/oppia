@@ -34,15 +34,17 @@ oppia.directive('oppiaInteractiveTextInput', [
         'text_input_interaction_directive.html'),
       controller: [
         '$scope', '$attrs', 'FocusManagerService', 'textInputRulesService',
-        'WindowDimensionsService', 'EVENT_PROGRESS_NAV_SUBMITTED',
+        'WindowDimensionsService', 'CurrentAnswerService',
         function(
             $scope, $attrs, FocusManagerService, textInputRulesService,
-            WindowDimensionsService, EVENT_PROGRESS_NAV_SUBMITTED) {
+            WindowDimensionsService, CurrentAnswerService) {
+          $scope.currentAnswerData = CurrentAnswerService.init(
+            textInputRulesService);
           $scope.placeholder = HtmlEscaperService.escapedJsonToObj(
             $attrs.placeholderWithValue);
           $scope.rows = (
             HtmlEscaperService.escapedJsonToObj($attrs.rowsWithValue));
-          $scope.answer = '';
+          $scope.currentAnswerData.answer = '';
           $scope.labelForFocusTarget = $attrs.labelForFocusTarget || null;
 
           $scope.schema = {
@@ -67,10 +69,7 @@ oppia.directive('oppiaInteractiveTextInput', [
             });
           };
 
-          $scope.$on(EVENT_PROGRESS_NAV_SUBMITTED, function() {
-            $scope.submitAnswer($scope.answer);
-          });
-
+          /* TODO: REMOVE
           $scope.$watch(function() {
             return $scope.answer;
           }, function(answer) {
@@ -78,6 +77,7 @@ oppia.directive('oppiaInteractiveTextInput', [
               answerValidity: (answer.length > 0)
             });
           });
+          */
         }
       ]
     };

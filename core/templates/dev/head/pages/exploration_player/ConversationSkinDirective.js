@@ -256,7 +256,7 @@ oppia.directive('conversationSkin', [
         'siteAnalyticsService', 'ExplorationPlayerStateService',
         'CONTENT_FOCUS_LABEL_PREFIX', 'AlertsService',
         'CONTINUE_BUTTON_FOCUS_LABEL', 'EVENT_ACTIVE_CARD_CHANGED',
-        'EVENT_NEW_CARD_AVAILABLE', 'EVENT_PROGRESS_NAV_SUBMITTED',
+        'EVENT_NEW_CARD_AVAILABLE', 'CurrentAnswerService',
         'FatigueDetectionService', 'NumberAttemptsService',
         'PlayerCorrectnessFeedbackEnabledService',
         'RefresherExplorationConfirmationModalService',
@@ -274,7 +274,7 @@ oppia.directive('conversationSkin', [
             siteAnalyticsService, ExplorationPlayerStateService,
             CONTENT_FOCUS_LABEL_PREFIX, AlertsService,
             CONTINUE_BUTTON_FOCUS_LABEL, EVENT_ACTIVE_CARD_CHANGED,
-            EVENT_NEW_CARD_AVAILABLE, EVENT_PROGRESS_NAV_SUBMITTED,
+            EVENT_NEW_CARD_AVAILABLE, CurrentAnswerService,
             FatigueDetectionService, NumberAttemptsService,
             PlayerCorrectnessFeedbackEnabledService,
             RefresherExplorationConfirmationModalService,
@@ -916,7 +916,10 @@ oppia.directive('conversationSkin', [
           };
 
           $scope.submitAnswerFromProgressNav = function() {
-            $scope.$broadcast(EVENT_PROGRESS_NAV_SUBMITTED);
+            $scope.submitAnswer(
+              CurrentAnswerService.getCurrentAnswer(),
+              CurrentAnswerService.getRulesService()
+            );
           };
         }
       ]
