@@ -15,30 +15,27 @@
 // The value for this editor is always editable.
 
 oppia.directive('booleanEditor', [
-  '$compile', 'OBJECT_EDITOR_URL_PREFIX',
-  function($compile, OBJECT_EDITOR_URL_PREFIX) {
+  'UrlInterpolationService', 'OBJECT_EDITOR_URL_PREFIX',
+  function(UrlInterpolationService, OBJECT_EDITOR_URL_PREFIX) {
     return {
       controller: ['$scope', function($scope) {
         // Reset the component each time the value changes (e.g. if this is part
         // of an editable list).
-        $scope.$watch('$parent.value', function(newValue) {
+        $scope.$watch('value', function(newValue) {
           $scope.localValue = {
             label: newValue || false
           };
         }, true);
 
         $scope.$watch('localValue.label', function(newValue) {
-          $scope.$parent.value = newValue;
+          $scope.value = newValue;
         });
       }],
-      link: function(scope, element) {
-        scope.getTemplateUrl = function() {
-          return OBJECT_EDITOR_URL_PREFIX + 'Boolean';
-        };
-        $compile(element.contents())(scope);
-      },
       restrict: 'E',
-      scope: true,
-      template: '<span ng-include="getTemplateUrl()"></span>'
+      scope: {
+        value: '='
+      },
+      templateUrl: UrlInterpolationService.getExtensionResourceUrl(
+        '/objects/templates/boolean_editor_directive.html'),
     };
   }]);

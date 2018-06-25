@@ -14,24 +14,23 @@
 
 
 oppia.directive('numberWithUnitsEditor', [
-  '$compile', 'NumberWithUnitsObjectFactory', 'OBJECT_EDITOR_URL_PREFIX',
-  function($compile, NumberWithUnitsObjectFactory, OBJECT_EDITOR_URL_PREFIX) {
+  'UrlInterpolationService', 'NumberWithUnitsObjectFactory',
+  'OBJECT_EDITOR_URL_PREFIX',
+  function(UrlInterpolationService, NumberWithUnitsObjectFactory,
+      OBJECT_EDITOR_URL_PREFIX) {
     return {
-      link: function(scope, element) {
-        scope.getTemplateUrl = function() {
-          return OBJECT_EDITOR_URL_PREFIX + 'NumberWithUnits';
-        };
-        $compile(element.contents())(scope);
-      },
       restrict: 'E',
-      scope: true,
-      template: '<span ng-include="getTemplateUrl()"></span>',
+      scope: {
+        value: '='
+      },
+      templateUrl: UrlInterpolationService.getExtensionResourceUrl(
+        '/objects/templates/number_with_units_editor_directive.html'),
       controller: ['$scope', function($scope) {
         var errorMessage = '';
-        var numberWithUnitsString = '0';
-        if ($scope.$parent.value !== null) {
+        var numberWithUnitsString = '';
+        if ($scope.value !== null) {
           var defaultNumberWithUnits =
-            NumberWithUnitsObjectFactory.fromDict($scope.$parent.value);
+            NumberWithUnitsObjectFactory.fromDict($scope.value);
           numberWithUnitsString = defaultNumberWithUnits.toString();
         }
         $scope.localValue = {
@@ -42,7 +41,7 @@ oppia.directive('numberWithUnitsEditor', [
           try {
             var numberWithUnits =
               NumberWithUnitsObjectFactory.fromRawInputString(newValue);
-            $scope.$parent.value = numberWithUnits;
+            $scope.value = numberWithUnits;
             errorMessage = '';
           } catch (parsingError) {
             errorMessage = parsingError.message;

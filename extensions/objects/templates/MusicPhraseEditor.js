@@ -15,18 +15,15 @@
 // This directive is always editable.
 
 oppia.directive('musicPhraseEditor', [
-  '$compile', 'OBJECT_EDITOR_URL_PREFIX', 'AlertsService',
-  function($compile, OBJECT_EDITOR_URL_PREFIX, AlertsService) {
+  'UrlInterpolationService', 'AlertsService', 'OBJECT_EDITOR_URL_PREFIX',
+  function(UrlInterpolationService, AlertsService, OBJECT_EDITOR_URL_PREFIX) {
     return {
-      link: function(scope, element) {
-        scope.getTemplateUrl = function() {
-          return OBJECT_EDITOR_URL_PREFIX + 'MusicPhrase';
-        };
-        $compile(element.contents())(scope);
-      },
       restrict: 'E',
-      scope: true,
-      template: '<div ng-include="getTemplateUrl()"></div>',
+      scope: {
+        value: '='
+      },
+      templateUrl: UrlInterpolationService.getExtensionResourceUrl(
+        '/objects/templates/music_phrase_editor_directive.html'),
       controller: ['$scope', function($scope) {
         // The maximum number of notes allowed in a music phrase.
         var _MAX_NOTES_IN_PHRASE = 8;
@@ -51,8 +48,8 @@ oppia.directive('musicPhraseEditor', [
 
         // Reset the component each time the value changes (e.g. if this is part
         // of an editable list).
-        $scope.$watch('$parent.value', function(newValue) {
-          // TODO(sll): Check that $scope.$parent.value is a list.
+        $scope.$watch('value', function(newValue) {
+          // TODO(sll): Check that $scope.value is a list.
           $scope.localValue = [];
           if (newValue) {
             for (var i = 0; i < newValue.length; i++) {
@@ -77,7 +74,7 @@ oppia.directive('musicPhraseEditor', [
                   }
                 });
               }
-              $scope.$parent.value = parentValues;
+              $scope.value = parentValues;
             }
           }
         }, true);

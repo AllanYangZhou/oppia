@@ -15,28 +15,27 @@
 // This directive is based on the unicodeStringEditor one.
 
 oppia.directive('sanitizedUrlEditor', [
-  '$compile', 'OBJECT_EDITOR_URL_PREFIX',
-  function($compile, OBJECT_EDITOR_URL_PREFIX) {
+  'UrlInterpolationService', 'OBJECT_EDITOR_URL_PREFIX',
+  function(UrlInterpolationService, OBJECT_EDITOR_URL_PREFIX) {
     // Editable URL directive.
     return {
-      link: function(scope, element) {
-        scope.getTemplateUrl = function() {
-          return OBJECT_EDITOR_URL_PREFIX + 'SanitizedUrl';
-        };
-        $compile(element.contents())(scope);
-      },
       restrict: 'E',
-      scope: true,
-      template: '<span ng-include="getTemplateUrl()"></span>',
+      scope: {
+        getInitArgs: '&',
+        value: '='
+      },
+      templateUrl: UrlInterpolationService.getExtensionResourceUrl(
+        '/objects/templates/unicode_string_editor_directive.html'),
       controller: ['$scope', function($scope) {
-        $scope.$watch('$parent.initArgs', function(newValue) {
+        $scope.initArgs = $scope.getInitArgs();
+        $scope.$watch('initArgs', function(newValue) {
           $scope.largeInput = false;
           if (newValue && newValue.largeInput) {
             $scope.largeInput = newValue.largeInput;
           }
         });
 
-        $scope.$watch('$parent.value', function(newValue) {
+        $scope.$watch('value', function(newValue) {
           $scope.localValue = {
             label: String(newValue) || ''
           };
@@ -45,7 +44,7 @@ oppia.directive('sanitizedUrlEditor', [
         $scope.alwaysEditable = true;
 
         $scope.$watch('localValue.label', function(newValue) {
-          $scope.$parent.value = newValue;
+          $scope.value = newValue;
         });
 
         $scope.$on('externalSave', function() {

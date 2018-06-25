@@ -15,21 +15,18 @@
 // This directive can only be used in the context of an exploration.
 
 oppia.directive('filepathEditor', [
-  '$compile', '$http', '$sce', 'AlertsService', 'ExplorationContextService',
-  'OBJECT_EDITOR_URL_PREFIX',
+  '$http', '$sce', 'AlertsService', 'ExplorationContextService',
+  'UrlInterpolationService', 'OBJECT_EDITOR_URL_PREFIX',
   function(
-      $compile, $http, $sce, AlertsService, ExplorationContextService,
-      OBJECT_EDITOR_URL_PREFIX) {
+      $http, $sce, AlertsService, ExplorationContextService,
+      UrlInterpolationService, OBJECT_EDITOR_URL_PREFIX) {
     return {
-      link: function(scope, element) {
-        scope.getTemplateUrl = function() {
-          return OBJECT_EDITOR_URL_PREFIX + 'Filepath';
-        };
-        $compile(element.contents())(scope);
-      },
       restrict: 'E',
-      scope: true,
-      template: '<div ng-include="getTemplateUrl()"></div>',
+      scope: {
+        value: '='
+      },
+      templateUrl: UrlInterpolationService.getExtensionResourceUrl(
+        '/objects/templates/filepath_editor_directive.html'),
       controller: ['$scope', function($scope) {
         var MODE_EMPTY = 1;
         var MODE_UPLOADED = 2;
@@ -321,9 +318,9 @@ oppia.directive('filepathEditor', [
 
         // Reset the component each time the value changes
         // (e.g. if this is part of an editable list).
-        $scope.$watch('$parent.value', function(newValue) {
+        $scope.$watch('value', function(newValue) {
           if (newValue) {
-            $scope.setSavedImageFilename(newValue, false);
+            $scope.setSavedImageFilename(newValue.name, false);
           }
         });
 
@@ -581,6 +578,7 @@ oppia.directive('filepathEditor', [
         };
 
         $scope.setSavedImageFilename = function(filename, updateParent) {
+          var dimensions = $scope.calculateTargetImageDimensions();
           $scope.data = {
             mode: MODE_SAVED,
             metadata: {
@@ -590,7 +588,11 @@ oppia.directive('filepathEditor', [
           };
           if (updateParent) {
             AlertsService.clearWarnings();
-            $scope.$parent.value = filename;
+            $scope.value = {
+              name: filename,
+              width: dimensions.width,
+              height: dimensions.height
+            };
           }
         };
 

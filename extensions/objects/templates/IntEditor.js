@@ -17,18 +17,15 @@
 // in via initArgs.
 
 oppia.directive('intEditor', [
-  '$compile', 'OBJECT_EDITOR_URL_PREFIX',
-  function($compile, OBJECT_EDITOR_URL_PREFIX) {
+  'UrlInterpolationService', 'OBJECT_EDITOR_URL_PREFIX',
+  function(UrlInterpolationService, OBJECT_EDITOR_URL_PREFIX) {
     return {
-      link: function(scope, element) {
-        scope.getTemplateUrl = function() {
-          return OBJECT_EDITOR_URL_PREFIX + 'Int';
-        };
-        $compile(element.contents())(scope);
-      },
       restrict: 'E',
-      scope: true,
-      template: '<span ng-include="getTemplateUrl()"></span>',
+      scope: {
+        value: '='
+      },
+      templateUrl: UrlInterpolationService.getExtensionResourceUrl(
+        '/objects/templates/int_editor_directive.html'),
       controller: ['$scope', function($scope) {
         $scope.SCHEMA = {
           type: 'int',
@@ -37,8 +34,8 @@ oppia.directive('intEditor', [
           }]
         };
 
-        if (!$scope.$parent.value) {
-          $scope.$parent.value = 0;
+        if (!$scope.value) {
+          $scope.value = 0;
         }
       }]
     };

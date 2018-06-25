@@ -16,18 +16,15 @@
 // available in the context in which it is used.
 
 oppia.directive('parameterNameEditor', [
-  '$compile', 'OBJECT_EDITOR_URL_PREFIX',
-  function($compile, OBJECT_EDITOR_URL_PREFIX) {
+  'UrlInterpolationService', 'OBJECT_EDITOR_URL_PREFIX',
+  function(UrlInterpolationService, OBJECT_EDITOR_URL_PREFIX) {
     return {
-      link: function(scope, element) {
-        scope.getTemplateUrl = function() {
-          return OBJECT_EDITOR_URL_PREFIX + 'ParameterName';
-        };
-        $compile(element.contents())(scope);
-      },
       restrict: 'E',
-      scope: true,
-      template: '<span ng-include="getTemplateUrl()"></span>',
+      scope: {
+        value: '='
+      },
+      templateUrl: UrlInterpolationService.getExtensionResourceUrl(
+        '/objects/templates/parameter_name_editor_directive.html'),
       controller: [
         '$scope', '$attrs', 'ExplorationParamSpecsService',
         function($scope, $attrs, ExplorationParamSpecsService) {
@@ -51,14 +48,14 @@ oppia.directive('parameterNameEditor', [
 
           // Reset the component each time the value changes (e.g. if this is
           // part of an editable list).
-          $scope.$watch('$parent.value', function(newValue) {
+          $scope.$watch('value', function(newValue) {
             if (newValue) {
               $scope.localValue = newValue;
             }
           }, true);
 
           $scope.$watch('localValue', function(newValue) {
-            $scope.$parent.value = newValue;
+            $scope.value = newValue;
           });
         }
       ]

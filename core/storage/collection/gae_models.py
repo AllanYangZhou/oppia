@@ -112,7 +112,7 @@ class CollectionModel(base_models.VersionedModel):
             collection_rights.community_owned
         )
         collection_commit_log.collection_id = self.id
-        collection_commit_log.put_async()
+        collection_commit_log.put()
 
 
 class CollectionRightsSnapshotMetadataModel(
@@ -140,6 +140,8 @@ class CollectionRightsModel(base_models.VersionedModel):
     owner_ids = ndb.StringProperty(indexed=True, repeated=True)
     # The user_ids of users who are allowed to edit this collection.
     editor_ids = ndb.StringProperty(indexed=True, repeated=True)
+    # The user_ids of users who are allowed to translate this collection.
+    translator_ids = ndb.StringProperty(indexed=True, repeated=True)
     # The user_ids of users who are allowed to view this collection.
     viewer_ids = ndb.StringProperty(indexed=True, repeated=True)
 

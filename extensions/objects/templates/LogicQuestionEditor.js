@@ -17,29 +17,26 @@
 // in via initArgs.
 
 oppia.directive('logicQuestionEditor', [
-  '$compile', 'OBJECT_EDITOR_URL_PREFIX',
-  function($compile, OBJECT_EDITOR_URL_PREFIX) {
+  'UrlInterpolationService', 'OBJECT_EDITOR_URL_PREFIX',
+  function(UrlInterpolationService, OBJECT_EDITOR_URL_PREFIX) {
     return {
-      link: function(scope, element) {
-        scope.getTemplateUrl = function() {
-          return OBJECT_EDITOR_URL_PREFIX + 'LogicQuestion';
-        };
-        $compile(element.contents())(scope);
-      },
       restrict: 'E',
-      scope: true,
-      template: '<span ng-include="getTemplateUrl()"></span>',
+      scope: {
+        value: '='
+      },
+      templateUrl: UrlInterpolationService.getExtensionResourceUrl(
+        '/objects/templates/logic_question_editor_directive.html'),
       controller: ['$scope', function($scope) {
         $scope.alwaysEditable = true;
         $scope.localValue = {
           assumptionsString: logicProofShared.displayExpressionArray(
-            $scope.$parent.value.assumptions,
+            $scope.value.assumptions,
             logicProofData.BASE_STUDENT_LANGUAGE.operators),
           targetString: logicProofShared.displayExpression(
-            $scope.$parent.value.results[0],
+            $scope.value.results[0],
             logicProofData.BASE_STUDENT_LANGUAGE.operators),
           errorMessage: '',
-          proofString: $scope.$parent.value.default_proof_string
+          proofString: $scope.value.default_proof_string
         };
 
         // NOTE: we use ng-change rather than $watch because the latter runs in
@@ -77,7 +74,7 @@ oppia.directive('logicQuestionEditor', [
                 $scope.localValue.assumptionsString,
                 $scope.localValue.targetString,
                 LOGIC_PROOF_DEFAULT_QUESTION_DATA.vocabulary));
-            $scope.$parent.value = {
+            $scope.value = {
               assumptions: builtQuestion.assumptions,
               results: builtQuestion.results,
               default_proof_string: $scope.localValue.proofString

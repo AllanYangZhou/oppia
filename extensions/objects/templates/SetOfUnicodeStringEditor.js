@@ -17,18 +17,15 @@
 // in via initArgs.
 
 oppia.directive('setOfUnicodeStringEditor', [
-  '$compile', 'OBJECT_EDITOR_URL_PREFIX',
-  function($compile, OBJECT_EDITOR_URL_PREFIX) {
+  'UrlInterpolationService', 'OBJECT_EDITOR_URL_PREFIX',
+  function(UrlInterpolationService, OBJECT_EDITOR_URL_PREFIX) {
     return {
-      link: function(scope, element) {
-        scope.getTemplateUrl = function() {
-          return OBJECT_EDITOR_URL_PREFIX + 'SetOfUnicodeString';
-        };
-        $compile(element.contents())(scope);
-      },
       restrict: 'E',
-      scope: true,
-      template: '<div ng-include="getTemplateUrl()"></div>',
+      scope: {
+        value: '='
+      },
+      templateUrl: UrlInterpolationService.getExtensionResourceUrl(
+        '/objects/templates/list_editor_directive.html'),
       controller: ['$scope', function($scope) {
         $scope.SCHEMA = {
           type: 'list',
@@ -40,8 +37,8 @@ oppia.directive('setOfUnicodeStringEditor', [
           }]
         };
 
-        if (!$scope.$parent.value) {
-          $scope.$parent.value = [];
+        if (!$scope.value) {
+          $scope.value = [];
         }
       }]
     };

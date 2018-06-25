@@ -14,24 +14,23 @@
 
 
 oppia.directive('fractionEditor', [
-  '$compile', 'FractionObjectFactory', 'OBJECT_EDITOR_URL_PREFIX',
-  function($compile, FractionObjectFactory, OBJECT_EDITOR_URL_PREFIX) {
+  'FractionObjectFactory', 'UrlInterpolationService',
+  'OBJECT_EDITOR_URL_PREFIX',
+  function(FractionObjectFactory, UrlInterpolationService,
+      OBJECT_EDITOR_URL_PREFIX) {
     return {
-      link: function(scope, element) {
-        scope.getTemplateUrl = function() {
-          return OBJECT_EDITOR_URL_PREFIX + 'Fraction';
-        };
-        $compile(element.contents())(scope);
-      },
       restrict: 'E',
-      scope: true,
-      template: '<span ng-include="getTemplateUrl()"></span>',
+      scope: {
+        value: '='
+      },
+      templateUrl: UrlInterpolationService.getExtensionResourceUrl(
+        '/objects/templates/fraction_editor_directive.html'),
       controller: ['$scope', function($scope) {
         var errorMessage = '';
         var fractionString = '0';
-        if ($scope.$parent.value !== null) {
+        if ($scope.value !== null) {
           var defaultFraction =
-            FractionObjectFactory.fromDict($scope.$parent.value);
+            FractionObjectFactory.fromDict($scope.value);
           defaultFractionString = defaultFraction.toString();
         }
         $scope.localValue = {
@@ -41,7 +40,7 @@ oppia.directive('fractionEditor', [
         $scope.$watch('localValue.label', function(newValue) {
           try {
             var fraction = FractionObjectFactory.fromRawInputString(newValue);
-            $scope.$parent.value = fraction;
+            $scope.value = fraction;
             errorMessage = '';
           } catch (parsingError) {
             errorMessage = parsingError.message;
